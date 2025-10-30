@@ -9,18 +9,16 @@
 use std::time::Duration;
 
 use bevy::{
-    core_pipeline::{bloom::Bloom, tonemapping::Tonemapping},
-    pbr::ScreenSpaceAmbientOcclusion,
-    platform::time::Instant,
-    prelude::*,
-    render::primitives::Aabb,
-    window::RequestRedraw,
+    anti_alias::smaa::Smaa, core_pipeline::tonemapping::Tonemapping,
+    pbr::ScreenSpaceAmbientOcclusion, platform::time::Instant, post_process::bloom::Bloom,
+    prelude::*, window::RequestRedraw,
 };
-use bevy_core_pipeline::smaa::Smaa;
+use bevy_camera::primitives::Aabb;
 use bevy_editor_cam::{
     extensions::{dolly_zoom::DollyZoomTrigger, look_to::LookToTrigger},
     prelude::*,
 };
+use bevy_render::view::Hdr;
 
 fn main() {
     App::new()
@@ -60,8 +58,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let camera = commands
         .spawn((
             Camera3d::default(),
+            Hdr,
             Camera {
-                hdr: true,
                 ..Default::default()
             },
             cam_trans,

@@ -38,13 +38,13 @@ bevy_core_pipeline = { version = "0.17.2", optional = true }
 bevy_gizmos = { version = "0.17.2", optional = true }
 
 [dev-dependencies]
-bevy_framepace = "0.20"
-big_space = "0.10.0"
+bevy_framepace = "0.20.0"
+big_space = "0.11.0"
 indoc = "2.0.5"
 rand = "0.9"
 
 [dev-dependencies.bevy]
-version = "0.16.0"
+version = "0.17.2"
 features = [
     "bevy_gizmos",
     "bevy_gltf",
@@ -58,7 +58,7 @@ features = [
     "ktx2",
     "tonemapping_luts",
     "x11",
-    "zstd",
+    "zstd_rust",
 ]
 
 [lints.clippy]

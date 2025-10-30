@@ -8,11 +8,10 @@
 //!
 //! The anchor indicator is rendered in world space, so it will be visible in both viewports!
 
-use bevy::{
-    core_pipeline::tonemapping::Tonemapping, prelude::*, render::camera::Viewport,
-    window::WindowResized,
-};
+use bevy::{core_pipeline::tonemapping::Tonemapping, prelude::*, window::WindowResized};
+use bevy_camera::Viewport;
 use bevy_editor_cam::prelude::*;
+use bevy_render::view::Hdr;
 
 fn main() {
     App::new()
@@ -38,8 +37,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera3d::default(),
         Transform::from_xyz(0.0, 2.0, -1.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Hdr,
         Camera {
-            hdr: true,
             clear_color: ClearColorConfig::None,
             ..default()
         },
@@ -63,10 +62,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera3d::default(),
         Transform::from_xyz(1.0, 1.0, 1.5).looking_at(Vec3::ZERO, Vec3::Y),
+        Hdr,
         Camera {
             // Renders the right camera after the left camera, which has a default priority of 0
             order: 10,
-            hdr: true,
             // don't clear on the second camera because the first camera already cleared the window
             clear_color: ClearColorConfig::None,
             ..default()

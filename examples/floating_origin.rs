@@ -145,7 +145,7 @@ fn ui_text_system(
 }
 
 fn ui_text(ref_frame: &Grid, origin_pos: &CellTransformReadOnlyItem) -> String {
-    let GridCell {
+    let CellCoord {
         x: cx,
         y: cy,
         z: cz,
