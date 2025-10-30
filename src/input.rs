@@ -1,6 +1,7 @@
 //! Provides a default input plugin for the camera. See [`DefaultInputPlugin`].
 
 use bevy_app::prelude::*;
+use bevy_camera::prelude::*;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::prelude::*;
 use bevy_input::{
@@ -10,7 +11,6 @@ use bevy_input::{
 use bevy_math::{prelude::*, DVec2, DVec3};
 use bevy_platform::collections::HashMap;
 use bevy_reflect::prelude::*;
-use bevy_render::{camera::CameraProjection, prelude::*};
 use bevy_transform::prelude::*;
 use bevy_window::PrimaryWindow;
 
@@ -49,7 +49,7 @@ impl From<&MotionInputs> for MotionKind {
 pub struct DefaultInputPlugin;
 impl Plugin for DefaultInputPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<crate::input::EditorCamInputEvent>()
+        app.add_message::<crate::input::EditorCamInputEvent>()
             .init_resource::<crate::input::CameraPointerMap>()
             .add_systems(
                 PreUpdate,
@@ -59,7 +59,7 @@ impl Plugin for DefaultInputPlugin {
                     EditorCamInputEvent::send_pointer_inputs,
                 )
                     .chain()
-                    .after(bevy_picking::PickSet::Last)
+                    .after(bevy_picking::PickingSystems::Last)
                     .before(crate::controller::component::EditorCam::update_camera_positions),
             )
             .register_type::<CameraPointerMap>()
@@ -155,7 +155,7 @@ pub fn default_camera_inputs(
 pub struct CameraPointerMap(HashMap<PointerId, Entity>);
 
 /// Events used when implementing input systems for the [`EditorCam`].
-#[derive(Debug, Clone, Reflect, Event)]
+#[derive(Debug, Clone, Reflect, Message)]
 pub enum EditorCamInputEvent {
     /// Send this event to start moving the camera. The anchor and inputs will be computed
     /// automatically until the [`EditorCamInputEvent::End`] event is received.
@@ -212,7 +212,7 @@ impl EditorCamInputEvent {
                         .map(|world_space_hit| {
                             // Convert the world space hit to view (camera) space
                             cam_transform
-                                .compute_matrix()
+                                .to_matrix()
                                 .as_dmat4()
                                 .inverse()
                                 .transform_point3(world_space_hit.into())

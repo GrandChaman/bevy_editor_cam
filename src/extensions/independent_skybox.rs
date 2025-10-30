@@ -8,12 +8,13 @@
 
 use bevy_app::prelude::*;
 use bevy_asset::Handle;
-use bevy_core_pipeline::{prelude::*, Skybox};
+use bevy_camera::{prelude::*, visibility::RenderLayers};
+use bevy_core_pipeline::Skybox;
 use bevy_ecs::prelude::*;
 use bevy_image::Image;
 use bevy_math::Quat;
 use bevy_reflect::prelude::*;
-use bevy_render::{prelude::*, view::RenderLayers};
+use bevy_render::{prelude::*, view::Hdr};
 use bevy_transform::prelude::*;
 
 /// See the [module](self) docs.
@@ -125,10 +126,10 @@ impl IndependentSkyboxCamera {
     /// entity.
     pub fn spawn(
         mut commands: Commands,
-        mut editor_cams: Query<(Entity, &mut IndependentSkybox, &mut Camera, &Msaa)>,
+        mut editor_cams: Query<(Entity, &mut IndependentSkybox, &mut Camera, &Msaa, Has<Hdr>)>,
         skybox_cams: Query<&IndependentSkyboxCamera>,
     ) {
-        for (editor_cam_entity, mut editor_without_skybox, mut camera, msaa) in
+        for (editor_cam_entity, mut editor_without_skybox, mut camera, msaa, has_hdr) in
             editor_cams.iter_mut().filter(|(_, config, ..)| {
                 config
                     .skybox_cam
@@ -137,14 +138,16 @@ impl IndependentSkyboxCamera {
             })
         {
             camera.clear_color = ClearColorConfig::None;
-            camera.hdr = true;
+            if !has_hdr {
+                commands.entity(editor_cam_entity).insert(Hdr);
+            }
 
             let entity = commands
                 .spawn((
                     Camera3d::default(),
+                    Hdr,
                     Camera {
                         order: camera.order + editor_without_skybox.skybox_cam_order_offset,
-                        hdr: true,
                         clear_color: ClearColorConfig::None,
                         ..Default::default()
                     },
