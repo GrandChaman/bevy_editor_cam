@@ -4,7 +4,6 @@ use bevy_camera::Projection;
 use bevy_ecs::prelude::*;
 use bevy_math::Vec3;
 use bevy_reflect::prelude::*;
-use bevy_render::prelude::*;
 use bevy_transform::prelude::*;
 
 use crate::prelude::*;

@@ -94,10 +94,10 @@ impl LookToTrigger {
 
 impl LookToTrigger {
     fn receive(
-        mut events: EventReader<Self>,
+        mut events: MessageReader<Self>,
         mut state: ResMut<LookTo>,
         mut cameras: Query<(&mut EditorCam, &Transform)>,
-        mut redraw: EventWriter<RequestRedraw>,
+        mut redraw: MessageWriter<RequestRedraw>,
     ) {
         for event in events.read() {
             let Ok((mut controller, transform)) = cameras.get_mut(event.camera) else {
@@ -166,7 +166,7 @@ impl LookTo {
     fn update(
         mut state: ResMut<Self>,
         mut cameras: Query<(Mut<Transform>, &EditorCam)>,
-        mut redraw: EventWriter<RequestRedraw>,
+        mut redraw: MessageWriter<RequestRedraw>,
     ) {
         let animation_duration = state.animation_duration;
         let animation_curve = state.animation_curve;

@@ -71,8 +71,8 @@ impl Plugin for DefaultInputPlugin {
 pub fn default_camera_inputs(
     pointers: Query<(&PointerId, &PointerLocation)>,
     pointer_map: Res<CameraPointerMap>,
-    mut controller: EventWriter<EditorCamInputEvent>,
-    mut mouse_wheel: EventReader<MouseWheel>,
+    mut controller: MessageWriter<EditorCamInputEvent>,
+    mut mouse_wheel: MessageReader<MouseWheel>,
     mouse_input: Res<ButtonInput<MouseButton>>,
     cameras: Query<(Entity, &Camera, &EditorCam)>,
     primary_window: Query<Entity, With<PrimaryWindow>>,
@@ -154,7 +154,7 @@ pub fn default_camera_inputs(
 #[derive(Debug, Clone, Default, Deref, DerefMut, Reflect, Resource)]
 pub struct CameraPointerMap(HashMap<PointerId, Entity>);
 
-/// Events used when implementing input systems for the [`EditorCam`].
+/// Messages used when implementing input systems for the [`EditorCam`].
 #[derive(Debug, Clone, Reflect, Message)]
 pub enum EditorCamInputEvent {
     /// Send this event to start moving the camera. The anchor and inputs will be computed
@@ -186,7 +186,7 @@ impl EditorCamInputEvent {
 
     /// Receive [`EditorCamInputEvent`]s, and use these to start and end moves on the [`EditorCam`].
     pub fn receive_events(
-        mut events: EventReader<Self>,
+        mut events: MessageReader<Self>,
         mut controllers: Query<(&mut EditorCam, &GlobalTransform)>,
         mut camera_map: ResMut<CameraPointerMap>,
         pointer_map: Res<PointerMap>,
@@ -280,8 +280,8 @@ impl EditorCamInputEvent {
     pub fn send_pointer_inputs(
         camera_map: Res<CameraPointerMap>,
         mut camera_controllers: Query<&mut EditorCam>,
-        mut mouse_wheel: EventReader<MouseWheel>,
-        mut moves: EventReader<PointerInput>,
+        mut mouse_wheel: MessageReader<MouseWheel>,
+        mut moves: MessageReader<PointerInput>,
     ) {
         let moves_list: Vec<_> = moves.read().collect();
         for (pointer, camera) in camera_map.iter() {
